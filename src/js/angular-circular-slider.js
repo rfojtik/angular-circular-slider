@@ -59,7 +59,11 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
     }
 
     function offsetParent() {
-      return angular.element(dom.offsetParent);
+    	var parentElement = angular.element(dom.offsetParent);
+      if (dom.offsetParent === null && dom.className === 'acs') {
+        parentElement = angular.element('#acspanel');
+      }
+      return parentElement;
     }
 
     function offset() {
@@ -131,7 +135,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
     },
 
     template: '\
-      <div class="acs-panel">\
+      <div class="acs-panel" id="acspanel">\
         <div class="acs">\
           <div class="acs-value" ng-transclude>\
           </div>\
@@ -1014,3 +1018,4 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
     .directive('circularSlider', circularSlider);
 
 }(window, window.angular));
+
