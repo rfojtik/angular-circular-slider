@@ -2,7 +2,6 @@
 
 Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
 **/
-
 (function(window, angular, undefined) {
 
   //utility functions
@@ -119,10 +118,11 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
       max: 359,
       value: 0,
       radius: 75,
-      innerCircleRatio: 0.5,
+      innerCircleRatio: 1.0,
       borderWidth: 1,
-      indicatorBallRatio: 0.2,
+      indicatorBallRatio: 0.3,
       handleDistRatio: 1.0,
+      fontSizeFactor: 1.0,
       clockwise: true,
       shape: "Circle",
       touch: true,
@@ -148,7 +148,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
 
   var shapes = {
     "Circle": {
-      drawShape: function(acsComponents, radius) {
+      drawShape: function(acsComponents, radius, fontSizeFactor) {
         var d = radius * 2;
         var rpx = d + "px";
         var acs = acsComponents.acs;
@@ -178,7 +178,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
         acsValue.css({
           'width': (iRadius * 2) + "px",
           'height': (iRadius * 2) + "px",
-          'font-size': iRadius / 2 + "px",
+          'font-size': (iRadius / 2) * fontSizeFactor + "px"
         });
 
         var corner = radius - iRadius;
@@ -215,7 +215,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
       },
     },
     "Half Circle": {
-      drawShape: function(acsComponents, radius) {
+      drawShape: function(acsComponents, radius, fontSizeFactor) {
         var d = radius * 2;
         var acs = acsComponents.acs;
         var acsValue = acsComponents.acsValue;
@@ -246,7 +246,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
         acsValue.css({
           'width': (iRadius * 2) + "px",
           'height': (iRadius * 2) + "px",
-          'font-size': iRadius / 2 + "px",
+          'font-size': (iRadius / 2) * fontSizeFactor + "px",
         });
 
         var corner = radius - iRadius;
@@ -284,7 +284,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
       },
     },
     "Half Circle Left": {
-      drawShape: function(acsComponents, radius) {
+      drawShape: function(acsComponents, radius, fontSizeFactor) {
         var d = radius * 2;
         var acs = acsComponents.acs;
         var acsValue = acsComponents.acsValue;
@@ -315,7 +315,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
         acsValue.css({
           'width': (iRadius * 2) + "px",
           'height': (iRadius * 2) + "px",
-          'font-size': iRadius / 2 + "px",
+          'font-size': (iRadius / 2) * fontSizeFactor + "px",
         });
 
         var corner = radius - iRadius;
@@ -354,7 +354,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
     },
 
     "Half Circle Right": {
-      drawShape: function(acsComponents, radius) {
+      drawShape: function(acsComponents, radius, fontSizeFactor) {
         var d = radius * 2;
         var acs = acsComponents.acs;
         var acsValue = acsComponents.acsValue;
@@ -385,7 +385,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
         acsValue.css({
           'width': (iRadius * 2) + "px",
           'height': (iRadius * 2) + "px",
-          'font-size': iRadius / 2 + "px",
+          'font-size': (iRadius / 2) * fontSizeFactor + "px",
         });
 
         var corner = radius - iRadius;
@@ -423,7 +423,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
       },
     },
     "Half Circle Bottom": {
-      drawShape: function(acsComponents, radius) {
+      drawShape: function(acsComponents, radius, fontSizeFactor) {
         var d = radius * 2;
         var acs = acsComponents.acs;
         var acsValue = acsComponents.acsValue;
@@ -454,7 +454,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
         acsValue.css({
           'width': (iRadius * 2) + "px",
           'height': (iRadius * 2) + "px",
-          'font-size': iRadius / 2 + "px",
+          'font-size': (iRadius / 2) * fontSizeFactor + "px",
         });
 
         var corner = radius - iRadius;
@@ -714,6 +714,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
         radius: '=?',
         innerCircleRatio: '=?',
         indicatorBallRatio: '=?',
+        fontSizeFactor: '=?',
         handleDistRatio: '=?',
         borderWidth: '=?',
         clockwise: '=?',
@@ -730,10 +731,10 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
     };
 
     function link(scope, element, attr, controller, transcludeFn) {
-      
+
       if(angular.isUndefined(scope.value))
         scope.value = scope.min;
-      
+
       angular.forEach(scope.$$isolateBindings, function(binding, key) {
         if (angular.isUndefined(scope[key])) {
           scope[key] = props.defaults[key];
@@ -776,7 +777,8 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
       function redrawShape() {
         var component = buildComponents();
         var radius = getRadius();
-        shapes[scope.shape].drawShape(component, radius);
+        var fontSizeFactor = getFontSizeFactor();
+        shapes[scope.shape].drawShape(component, radius, fontSizeFactor);
         drawIndicatorBall(component, radius);
 
         var $$acs = $$(component.acs);
@@ -855,6 +857,10 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
       function getRadius() {
         return Math.abs(parseInt(scope.radius)) || props.defaults.radius;
       }
+
+      function getFontSizeFactor() {
+        return scope.fontSizeFactor;
+      }
     }
   }
 
@@ -876,7 +882,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
         transform: parseInt
       },
       number: {
-        bindings: ['innerCircleRatio', 'indicatorBallRatio', 'handleDistRatio'],
+        bindings: ['innerCircleRatio', 'indicatorBallRatio', 'fontSizeFactor', 'handleDistRatio'],
         transform: parseFloat,
       },
       'boolean': {
@@ -901,7 +907,7 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
           onError: typeErrorMsg('integer')
         },
         number: {
-          bindings: ['innerCircleRatio', 'indicatorBallRatio', 'handleDistRatio'],
+          bindings: ['innerCircleRatio', 'indicatorBallRatio', 'fontSizeFactor', 'handleDistRatio'],
           test: isFinite,
           onError: typeErrorMsg('number')
         },
@@ -954,6 +960,15 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
           },
           onError: function(b, value) {
             return [b + '(', value, ') is out of range: [0,1]'].join('');
+          },
+        },
+        factor: {
+          bindings: ['fontSizeFactor'],
+          test: function ratio(value) {
+            return value >= 0.0 && value <= 10.0;
+          },
+          onError: function(b, value) {
+            return [b + '(', value, ') is out of range: [0,10]'].join('');
           },
         },
       }
@@ -1018,4 +1033,3 @@ Copyright (c) 2015 Prince John Wesley (princejohnwesley@gmail.com)
     .directive('circularSlider', circularSlider);
 
 }(window, window.angular));
-
